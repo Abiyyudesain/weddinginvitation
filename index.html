@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style id="prepaint-device-layout">
+  * { box-sizing: border-box; }
+  html, body { margin: 0; max-width: 100%; }
+  /* Laptop/desktop use the same 390px phone-sized canvas as the all-device version. */
+  @media (min-width: 801px) {
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    body { background: #111b16; }
+    .topbar, .layout {
+      width: 390px !important; max-width: 100% !important;
+      margin-left: auto !important; margin-right: auto !important;
+      box-sizing: border-box;
+    }
+    .topbar { min-height: 52px; padding: 6px 9px; gap: 5px; }
+    .brand { font-size: 18px; white-space: nowrap; }
+    .top-actions { gap: 5px; min-width: 0; overflow-x: auto; }
+    .top-actions a { font-size: 12px; padding: 5px 7px; }
+    .topbar small { display: none; }
+    .layout { display: block !important; grid-template-columns: 1fr !important; }
+    .cover {
+      position: relative !important; top: auto !important; width: 100% !important;
+      height: 740px !important; min-height: 560px !important; padding: 20px !important;
+    }
+    .fan { width: 312px !important; height: 312px !important; max-width: 80% !important; }
+    .cover-frame { width: 86% !important; min-height: 72%; padding: 60px 20px !important; }
+    .section, .content > .section { padding: 60px 25px !important; }
+    .details { grid-template-columns: 1fr !important; }
+    .countdown { gap: 6px; }
+    .timebox { min-width: 58px; padding: 10px 7px; }
+    .timebox strong { font-size: 22px; }
+    .photo { min-height: 130px; }
+    .photo:first-child { min-height: 210px; }
+    .gallery .photo, .gallery .photo:first-child { flex-basis: 84%; height: 245px; }
+    .couple-photos { gap: 10px; }
+    .couple-frame { height: 220px; }
+    .couple-card { padding: 6px; }
+    .couple-name { font-size: 15px; }
+    .couple-parents { font-size: 13px !important; }
+    .marriage-verse { padding: 24px 20px; }
+    .ornament { font-size: 27px; }
+  }
+  /* Keep the opening panel visible on desktop after the guest taps Open Invitation. */
+  @media (min-width: 801px) {
+    .cover.doors-opening {
+      animation: none !important; opacity: 1 !important;
+      visibility: visible !important; pointer-events: auto !important;
+    }
+    .cover.doors-opening .cover-frame {
+      opacity: 1 !important; transform: scale(1.05) !important;
+      transition-delay: 0s !important;
+    }
+  }
+  @media (max-width: 800px) {
+    html, body { width: 100%; overflow-x: hidden; }
+    .layout { display: block; width: 100%; max-width: 100%; }
+    .cover { width: 100%; position: relative; top: auto; }
+  }
+  /* The owner editor stays hidden until the owner taps Edit and enters the password. */
+  #publishEditor { display: none !important; }
+  #publishEditor.show { display: block !important; }
+  .edit-access-btn {
+    border: 1px solid #9d8b68; background: #30483d; color: #f3ead7;
+    padding: 6px 10px; border-radius: 20px; font: inherit; font-size: 12px;
+    white-space: nowrap; cursor: pointer; flex: 0 0 auto;
+  }
+</style>
+
+<title>Undangan Pernikahan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;family=Cormorant+Garamond:wght@400;500;600;700&amp;family=IM+Fell+English:ital@0;1&amp;display=swap" rel="stylesheet">
+<style>
+:root{--forest:#172b25;--green:#29483d;--sage:#718477;--ivory:#eee5d1;--gold:#b49a68;--wine:#70283d;--ink:#e9e2d1}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#111b17;color:var(--ink);font-family:'Cormorant Garamond',serif}button,input{font:inherit}
+.topbar{min-height:58px;background:#f4efe5;color:#263b31;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:7px 22px;position:sticky;top:0;z-index:150;box-shadow:0 2px 12px #0004}.brand{font-family:'IM Fell English',serif;font-size:22px;color:#8a2850}.topbar small{font-size:12px;letter-spacing:1px}.top-actions{display:flex;gap:8px;align-items:center}.top-actions a{color:#30483d;text-decoration:none;border:1px solid #b9a982;padding:7px 11px;border-radius:20px;font-size:14px;white-space:nowrap}.top-actions a:hover{background:#e6dcc8}.mobile-edit-trigger{display:none!important}.top-actions button,.editor button{border:1px solid #9d8b68;background:#30483d;color:#f3ead7;padding:8px 12px;cursor:pointer;border-radius:3px}.top-actions .light{background:transparent;color:#30483d}
+.layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);min-height:calc(100vh - 58px);max-width:1900px;margin:auto}.cover{min-height:calc(100vh - 58px);position:sticky;top:54px;height:calc(100vh - 58px);overflow:hidden;background:linear-gradient(#0c1c17a8,#0c1c1799),radial-gradient(ellipse at 50% 35%,#63705a,#1c3028 58%,#101a16);display:flex;align-items:center;justify-content:center;padding:32px}
+.cover-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.62}.forest-art{position:absolute;inset:0;opacity:.7;background:radial-gradient(ellipse at 50% 30%,#9b9870 0 2%,transparent 3%),radial-gradient(ellipse at 30% 40%,#53654e 0 8%,transparent 35%),radial-gradient(ellipse at 70% 70%,#52634a 0 7%,transparent 38%),linear-gradient(110deg,#14271f,#354337 45%,#14231d);filter:saturate(.65)}
+.forest-art:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(82deg,transparent 0 70px,#101d17aa 72px 80px,transparent 82px 130px),radial-gradient(ellipse at 50% 60%,transparent 0 30%,#08140f99 85%);opacity:.7}
+.fan{position:absolute;width:min(42vw,560px);height:min(42vw,560px);border-radius:50%;border:15px ridge #9a8053;background:repeating-conic-gradient(from -90deg at 50% 100%,#173a31 0 9deg,#b18b54 9.5deg 10.5deg,#24463a 11deg 19deg);clip-path:polygon(0 0,100% 0,100% 100%,0 100%);opacity:.85;box-shadow:0 0 0 7px #17271f,0 0 0 11px #b39b6c55;top:50%;transform:translateY(-35%) rotate(-9deg)}.fan:before{content:"✿  ❀  ✿  ❀  ✿";position:absolute;top:17%;left:8%;font-size:clamp(25px,4vw,55px);color:#9a4350;text-shadow:0 2px #211}.fan:after{content:"";position:absolute;inset:8%;border:2px solid #d1b57d;border-radius:50%}
+.cover-frame{position:relative;z-index:4;transition:transform 1.15s cubic-bezier(.2,.75,.2,1),opacity 1s ease;transform-origin:center;width:min(78%,570px);min-height:78%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 35px;background:linear-gradient(145deg,#344d41ed,#1d342bed 70%);border:3px double #b9a477;outline:1px solid #b9a477;outline-offset:9px;box-shadow:0 20px 60px #0009}
+.cover-frame:before,.cover-frame:after{content:"❧";position:absolute;color:#c6ad7c;font-size:64px;left:18px;top:8px}.cover-frame:after{left:auto;top:auto;right:18px;bottom:8px;transform:rotate(180deg)}
+.lace{position:absolute;left:0;right:0;height:52px;z-index:3;opacity:.9;background:radial-gradient(circle at 12px 0,transparent 12px,#e6dcc5 13px 15px,transparent 16px) 0 0/24px 24px repeat-x,radial-gradient(circle at 12px 0,#e6dcc5 0 2px,transparent 3px) 0 0/24px 24px repeat-x}.lace.top{top:0;transform:rotate(180deg)}.lace.bottom{bottom:0}
+.kicker{font-size:17px;letter-spacing:2px;font-style:italic}.names{font-family:'Cinzel',serif;font-size:clamp(34px,5vw,66px);line-height:1.18;color:#f1e8d3;margin:18px 0;text-shadow:0 3px 15px #0008}.amp{font-family:'IM Fell English',serif;font-size:42px;color:#c7ae7c}.cover-date{letter-spacing:2px;font-size:17px;margin:18px 0 28px}.open-btn{background:var(--wine);color:#fff1df;border:1px solid #b48c71;padding:13px 30px;border-radius:30px;cursor:pointer;letter-spacing:1px}
+.content{position:relative;background:#1c3028;overflow:hidden}.cover.opening .cover-frame{transform:scale(1.12);opacity:0}.cover.opening .fan{transform:translateY(-35%) rotate(-9deg) scale(1.12);transition:transform 1.2s ease,opacity 1.2s ease;opacity:.12}.cover.opening .forest-art{transform:scale(1.08);transition:transform 1.5s ease}.cover.opening{animation:coverFade 1.35s ease forwards;animation-delay:.45s}@keyframes coverFade{to{opacity:0;visibility:hidden;pointer-events:none}}.couple-photos{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:680px;margin:30px auto 0}.couple-card{padding:10px;border:1px solid #b49a68;background:#172a23;box-shadow:0 8px 22px #0004}.couple-frame{height:310px;position:relative;overflow:hidden;border:6px double #b49a68;background:linear-gradient(135deg,#627466,#253b30);display:grid;place-items:center}.couple-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.couple-frame span{font-style:italic;color:#eee2ca}.couple-name{font-family:'Cinzel';font-size:19px;margin:14px 0 3px;color:#ead9b5}@media(max-width:520px){.couple-photos{gap:10px}.couple-frame{height:220px}.couple-card{padding:6px}.couple-name{font-size:15px}}.section{position:relative;padding:76px clamp(24px,5vw,72px);text-align:center;border-bottom:1px solid #a68d6044;background:linear-gradient(145deg,#31483d,#1d332a 70%)}.section:nth-child(even){background:linear-gradient(145deg,#263d33,#182a23)}.section:before{content:"";position:absolute;inset:12px;border:1px solid #b49a6855;pointer-events:none}.ornament{font-size:28px;color:#c0a879;letter-spacing:8px}.eyebrow{text-transform:uppercase;letter-spacing:4px;color:#d0bd91;font-size:14px}.section h2{font-family:'Cinzel',serif;font-size:clamp(25px,3vw,39px);font-weight:500;margin:15px 0 22px;color:#eee5d1}.section p{font-size:20px;line-height:1.55;max-width:590px;margin:12px auto}.names-small{font-family:'Cinzel',serif;font-size:28px;line-height:1.5}.countdown{display:flex;justify-content:center;gap:12px;margin:30px auto}.timebox{border:1px solid #b49a68;padding:12px 14px;min-width:66px;background:#12241d77}.timebox strong{display:block;font-family:'Cinzel';font-size:26px;font-weight:500}.timebox span{font-size:12px;letter-spacing:1px;text-transform:uppercase}.details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:25px}.detail{border:1px solid #b49a6877;padding:24px 12px;background:#172a23aa}.detail h3{font-family:'Cinzel';font-size:19px;font-weight:500}.detail .bigdate{font-size:26px;color:#e7d8b8}.gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px auto 0;max-width:620px}.photo{min-height:180px;border:7px solid #d6c9ae;outline:1px solid #8c744b;position:relative;background:linear-gradient(135deg,#66786b,#24382e);overflow:hidden}.photo:first-child{grid-column:span 2;min-height:290px}.photo img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}.photo .placeholder{position:absolute;inset:0;display:grid;place-items:center;color:#eee2ca;font-style:italic;font-size:18px}.quote{font-family:'IM Fell English',serif;font-size:25px!important;font-style:italic;color:#e4d2aa}.footer{padding:35px;text-align:center;background:#111f19;color:#bca77d;font-size:15px}
+.editor{position:fixed;z-index:100;right:14px;top:70px;width:min(360px,calc(100vw - 28px));max-height:calc(100vh - 88px);overflow:auto;background:#eee6d5;color:#26382f;box-shadow:0 12px 50px #0009;border:1px solid #a68b5c;padding:16px;display:none}.editor.show{display:block}.reopen-editor{display:none;position:fixed;z-index:110;right:16px;top:70px;background:#30483d;color:#f3ead7;border:1px solid #b49a68;padding:10px 14px;border-radius:24px;box-shadow:0 5px 18px #0007;cursor:pointer}.reopen-editor.show{display:block}.editor h2{font-family:'Cinzel';font-size:20px;margin:0 0 12px}.editor h3{font-family:'Cinzel';font-size:14px;margin:17px 0 8px;border-bottom:1px solid #b9a982;padding-bottom:5px}.editor label{display:block;font-size:13px;margin:8px 0 4px}.editor input[type=text],.editor input[type=date],.editor textarea,.editor select{width:100%;padding:8px;border:1px solid #b5a889;background:#fffdf7;color:#26382f}.editor textarea{min-height:65px}.editor input[type=file]{width:100%;font-size:12px}.editor .row{display:flex;gap:7px;flex-wrap:wrap}.editor .row button{font-size:12px;padding:7px 9px}.editor .danger{background:#70283d}.editor .hint{font-size:12px;line-height:1.4;color:#5d665d}.editor .close{float:right;background:#70283d}
+.editable{outline:1px dashed transparent;cursor:text}.editing .editable:hover{outline-color:#d7b56c;background:#ffffff0a}.decor-layer{position:absolute;inset:0;min-height:100%;z-index:15;pointer-events:none;overflow:visible}.decor{position:absolute;z-index:8;cursor:grab;touch-action:none;user-select:none;max-width:none;pointer-events:auto;transform:none}.decor:active{cursor:grabbing}.decor img{display:block;width:100%;height:auto;pointer-events:none}.decor .resize{position:absolute;width:18px;height:18px;right:-9px;bottom:-9px;background:#e2bd72;border:2px solid #24382f;border-radius:50%;cursor:nwse-resize;touch-action:none}.decor.selected{outline:2px dashed #e2bd72}.decor .resize{position:absolute;width:14px;height:14px;right:-7px;bottom:-7px;background:#e2bd72;border:1px solid #24382f;cursor:nwse-resize}.selected-tools{display:none;position:fixed;z-index:120;bottom:18px;left:50%;transform:translateX(-50%);background:#eee6d5;padding:8px;border:1px solid #b49a68;gap:8px}.selected-tools.show{display:flex}.selected-tools button{background:#30483d;color:white;border:0;padding:8px 12px}
+.music-control{position:fixed;bottom:18px;left:18px;right:auto;z-index:30;border:1px solid #c1a675;background:#70283d;color:#fff;padding:12px 15px;border-radius:50%;cursor:pointer}
+
+/* Vintage double-door opening */
+.door-panel{position:absolute;z-index:1;top:0;bottom:0;width:50%;background:linear-gradient(135deg,#1b352a,#304b3d 48%,#172b23);border:8px ridge #ad9463;box-shadow:inset 0 0 0 8px #1c3028,inset 0 0 0 10px #c1a675,0 0 35px #0008;transition:transform 1.25s cubic-bezier(.7,0,.2,1);pointer-events:none}
+.door-panel:before{content:'❧';position:absolute;top:12%;font-size:clamp(55px,8vw,100px);color:#c5ad7d;text-shadow:0 2px 8px #0008}
+.door-panel:after{content:'';position:absolute;inset:18%;border:2px solid #b49a68;outline:1px solid #b49a6855;box-shadow:inset 0 0 0 10px #b49a6818}
+.door-left{left:0;transform-origin:left center}.door-left:before{right:20%}.door-right{right:0;transform-origin:right center}.door-right:before{left:20%;transform:scaleX(-1)}
+.cover.doors-opening .door-left{transform:perspective(1000px) rotateY(-108deg)}.cover.doors-opening .door-right{transform:perspective(1000px) rotateY(108deg)}
+.cover.doors-opening .cover-frame{transform:scale(1.05);opacity:0;transition-delay:.7s}
+.cover.doors-opening{animation:coverFade 1.7s ease forwards;animation-delay:1.0s}
+#decorLayer{z-index:18}.decor{pointer-events:none}.decor-layer.decor-active{pointer-events:auto}.decor-layer.decor-active .decor{pointer-events:auto}.decor .resize{display:none}.decor .rotate-handle{display:none;position:absolute;width:16px;height:16px;left:50%;top:-25px;transform:translateX(-50%);border-radius:50%;background:#e2bd72;border:2px solid #24382f;cursor:grab;touch-action:none}.decor-layer.decor-active .decor.selected .resize,.decor-layer.decor-active .decor.selected .rotate-handle{display:block}
+#decorControls{display:none;position:fixed;z-index:10001;bottom:16px;left:50%;transform:translateX(-50%);background:#eee6d5;color:#26382f;border:1px solid #b49a68;padding:8px;border-radius:8px;box-shadow:0 6px 24px #0008;gap:6px;align-items:center;max-width:calc(100vw - 20px)}
+#decorControls.show{display:flex}#decorControls button{background:#30483d;color:#fff;border:0;padding:8px 10px;border-radius:4px}#decorControls .danger{background:#70283d}
+@media(max-width:800px){.topbar{padding:7px 10px;gap:8px}.brand{font-size:18px}.top-actions{gap:5px;overflow-x:auto}.top-actions a{font-size:12px;padding:6px 8px}.mobile-edit-trigger{display:none!important}.layout{grid-template-columns:1fr}.cover{min-height:620px}.door-panel{border-width:5px}.door-panel:after{inset:16%}}
+@media(min-width:801px){.content>.section{padding-left:clamp(30px,4vw,76px);padding-right:clamp(30px,4vw,76px)}}
+@media(max-width:800px){.layout{display:block}.cover{position:relative;top:auto;height:88vh;min-height:620px}.fan{width:80vw;height:80vw}.cover-frame{width:80%;min-height:72%;padding:60px 20px}.section{padding:60px 25px}.editor{top:62px}.topbar small{display:none}}
+@media(max-width:420px){.details{grid-template-columns:1fr}.countdown{gap:6px}.timebox{min-width:58px;padding:10px 7px}.timebox strong{font-size:22px}.photo{min-height:130px}.photo:first-child{min-height:210px}}
+.editor,.reopen-editor{display:none!important}.editor.show,.reopen-editor.show{display:block!important}
+
+/* V10: swipeable gallery and uploaded section backgrounds */
+.gallery{display:flex;gap:16px;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:8px 4px 18px;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+.gallery .photo,.gallery .photo:first-child{grid-column:auto;flex:0 0 min(72%,420px);height:300px;min-height:0;scroll-snap-align:center}
+.gallery::-webkit-scrollbar{height:7px}.gallery::-webkit-scrollbar-thumb{background:#b49a68;border-radius:10px}.gallery::-webkit-scrollbar-track{background:#182a23}
+.couple-parents{font-size:15px!important;line-height:1.45!important;color:#d8c9a9;margin:5px auto 12px!important;max-width:260px!important}
+.section{background-size:cover;background-position:center;background-repeat:no-repeat}
+@media(max-width:520px){.gallery .photo,.gallery .photo:first-child{flex-basis:84%;height:245px}.couple-parents{font-size:13px!important}}
+
+.marriage-verse{max-width:760px;margin:30px auto 26px;padding:24px 26px;border:1px solid #b49a6888;background:rgba(13,29,22,.42);box-shadow:inset 0 0 0 5px rgba(180,154,104,.08)}.verse-label{font-size:12px;letter-spacing:3px;color:#d0bd91;margin-bottom:18px}.verse-arabic{font-family:serif;font-size:clamp(25px,3.5vw,36px);line-height:2;color:#f2e6cb;margin:10px auto 16px}.verse-translation{font-size:17px!important;line-height:1.7!important;font-style:italic;color:#e6d8bb}.verse-reference{font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;color:#d0bd91;margin-top:14px}
+
+
+/* Gentle vintage sway for the corner swan, birds, and floral ornaments */
+@keyframes decorSway {
+  0%, 100% { rotate: 0deg; }
+  25% { rotate: 2.2deg; }
+  50% { rotate: 0deg; }
+  75% { rotate: -2.2deg; }
+}
+#decorLayer .decor.animate-sway {
+  transform-origin: 50% 55%;
+  animation: decorSway 5.8s ease-in-out infinite;
+  will-change: rotate;
+}
+#decorLayer .decor.animate-sway:nth-child(2n) { animation-duration: 6.7s; animation-delay: -1.8s; }
+#decorLayer .decor.animate-sway:nth-child(3n) { animation-duration: 7.4s; animation-delay: -3.1s; }
+#decorLayer .decor.animate-sway:nth-child(4n) { animation-duration: 6.2s; animation-delay: -2.4s; }
+#decorLayer.decor-active .decor.animate-sway { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  #decorLayer .decor.animate-sway { animation: none; }
+}
+
+
+
+/* MOBILE SIZE ADJUSTMENT ONLY — existing content and interactions are preserved */
+@media (max-width: 800px) {
+  html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+  .topbar { min-height: 52px; padding: 6px 9px; }
+  .brand { font-size: clamp(15px, 4.2vw, 18px); white-space: nowrap; }
+  .top-actions a { font-size: clamp(10px, 3vw, 12px); padding: 5px 7px; }
+  .layout { width: 100%; max-width: 100%; }
+  .cover {
+    width: 100%;
+    height: 88svh;
+    min-height: 560px;
+    padding: clamp(16px, 5vw, 28px);
+  }
+  .cover-frame {
+    width: min(84%, 460px);
+    min-height: 70%;
+    padding: clamp(34px, 9vw, 58px) clamp(14px, 5vw, 22px);
+  }
+  .names { font-size: clamp(30px, 8vw, 48px); }
+  .kicker, .cover-date { font-size: clamp(13px, 3.8vw, 16px); }
+  .section { padding: clamp(38px, 9vw, 58px) clamp(16px, 5vw, 25px); }
+  .section h2 { font-size: clamp(23px, 6vw, 32px); }
+  .section p { font-size: clamp(17px, 4.5vw, 20px); }
+  .details { gap: 12px; }
+  .countdown { gap: clamp(5px, 2vw, 10px); }
+  .timebox { min-width: clamp(52px, 15vw, 66px); padding: 9px 6px; }
+  .timebox strong { font-size: clamp(19px, 5.5vw, 24px); }
+  .gallery .photo, .gallery .photo:first-child {
+    flex-basis: min(84%, 340px);
+    height: clamp(190px, 62vw, 245px);
+  }
+  .couple-frame { height: clamp(175px, 57vw, 220px); }
+  #decorControls {
+    bottom: max(10px, env(safe-area-inset-bottom));
+    gap: 5px;
+    padding: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  #decorControls button { padding: 7px 8px; font-size: 12px; }
+  .selected-tools { bottom: max(10px, env(safe-area-inset-bottom)); }
+  .music-control { bottom: max(14px, env(safe-area-inset-bottom)); left: 12px; }
+}
+@media (max-width: 420px) {
+  .topbar { gap: 5px; }
+  .top-actions { min-width: 0; }
+  .top-actions a { padding: 5px 6px; }
+  .cover-frame { width: 86%; }
+  .ornament { font-size: clamp(21px, 6vw, 27px); }
+  .details { grid-template-columns: 1fr; }
+}
+
+</style></head>
+<body class="">
+<header class="topbar"><div class="brand">✧ our story ✧</div><nav class="top-actions" aria-label="Navigasi undangan"><a href="#couple">Mempelai</a><a href="#gallery">Galeri</a><a href="#event">Tanggal</a></nav></header>
+<main class="layout" id="site">
+<section class="cover doors-opening" id="cover"><img id="coverPhoto" class="cover-photo" alt="Foto utama undangan" hidden=""><div class="forest-art"></div><div class="door-panel door-left"></div><div class="door-panel door-right"></div><div class="fan"></div><div class="lace top"></div><div class="lace bottom"></div>
+<div class="cover-frame">
+<div class="ornament">❦ ❧ ❦</div><div class="kicker editable" data-key="intro" contenteditable="false">You are cordially invited to the wedding of</div>
+<div class="names"><span class="editable" data-key="groom" contenteditable="false">ARJUNA</span><br><span class="amp">&amp;</span><br><span class="editable" data-key="bride" contenteditable="false">NASYWA</span></div>
+<div class="cover-date editable" data-key="coverdate" contenteditable="false">23 NOVEMBER 2026</div>
+<button class="open-btn" onclick="openInvitation()" data-auto-edit-key="auto_2">Open Invitation ✧</button>
+<div class="ornament" style="margin-top:25px">❀ ❧ ❀</div></div></section>
+<div class="content" id="content"><div class="decor-layer" id="decorLayer"><div class="decor" data-decor="1" style="left: 5.1168%; top: 22.7571%; width: 21.218%; transform: rotate(-89.925deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 5.05201%; top: 21.0447%; width: 19.2561%; transform: rotate(89.832deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 72.9655%; top: 22.8154%; width: 20.0732%; transform: rotate(270.033deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 39.1323%; top: 22.7934%; width: 20.5202%; transform: rotate(269.987deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 87.4195%; top: 32.3258%; width: 12.5805%; transform: rotate(240.454deg);"><img src="assets/image-02.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 88.4816%; top: 31.6359%; width: 10.5926%; transform: rotate(-436.32deg);"><img src="assets/image-02.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 86.5504%; top: 31.8987%; width: 13.4496%; transform: rotate(268.148deg);"><img src="assets/image-02.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 0%; top: 31.8567%; width: 12.5413%; transform: rotate(84.2029deg);"><img src="assets/image-03.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 0%; top: 32.5189%; width: 12.4353%; transform: rotate(96.0018deg);"><img src="assets/image-03.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 0.838656%; top: 31.5985%; width: 10.6509%; transform: rotate(69.019deg);"><img src="assets/image-03.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 28.4965%; top: 30.5806%; width: 39.6696%; transform: rotate(-0.283514deg);"><img src="assets/image-04.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 72.6907%; top: 47.5401%; width: 19.9772%; transform: rotate(269.628deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 38.8151%; top: 47.4887%; width: 21.291%; transform: rotate(269.584deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 9.16284%; top: 47.4767%; width: 21.8527%; transform: rotate(-90.3178deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 8.64773%; top: 45.5663%; width: 21.008%; transform: rotate(90.2083deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 77.2641%; top: 45.5526%; width: 21.1917%; transform: rotate(89.8198deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 43.9347%; top: 45.6103%; width: 20.8859%; transform: rotate(89.3778deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 70.3576%; top: 20.7926%; width: 21.4679%; transform: rotate(89.8283deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor" data-decor="1" style="left: 36.7152%; top: 20.8451%; width: 20.9321%; transform: rotate(90.0889deg);"><img src="assets/image-01.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 72.454%; top: 60.9982%; width: 27.546%; transform: rotate(15.6762deg);"><img src="assets/image-05.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 1.2388%; top: 50.0821%; width: 25.5291%; transform: rotate(-19.0574deg);"><img src="assets/image-06.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 88.3123%; top: 82.5704%; width: 11.6877%; transform: rotate(0.420236deg);"><img src="assets/image-02.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 0%; top: 82.8263%; width: 11.9922%; transform: rotate(2.56303deg);"><img src="assets/image-03.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 89.4468%; top: 83.6014%; width: 9.90478%; transform: rotate(-19.5026deg);"><img src="assets/image-02.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 0.43964%; top: 83.7141%; width: 10.1937%; transform: rotate(25.236deg);"><img src="assets/image-03.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div><div class="decor animate-sway" data-decor="1" style="left: 32.9273%; top: 84.181%; width: 32.3048%; transform: rotate(0deg);"><img src="assets/image-04.png" alt="Elemen dekorasi tambahan"><span class="resize" aria-label="Ubah ukuran"></span><span class="rotate-handle" aria-label="Putar elemen"></span></div></div>
+<section class="section" id="invitation" style="background-image: linear-gradient(rgba(17, 34, 26, 0.76), rgba(17, 34, 26, 0.82)), url(&quot;assets/image-07.jpg&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;"><div class="ornament">❧ ❦ ❧</div><div class="eyebrow editable" data-key="greeting" contenteditable="false">THE WEDDING OF</div><h2 data-auto-edit-key="auto_4" contenteditable="false"><span class="editable" data-key="groom2" contenteditable="false">Arjuna</span> &amp; <span class="editable" data-key="bride2" contenteditable="false">Nasywa</span></h2>
+<p class="editable" data-key="opening" contenteditable="false">Dengan penuh rasa syukur dan kebahagiaan, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan menjadi bagian dari hari istimewa kami.</p><div class="marriage-verse"><div class="verse-label">DALIL TENTANG PERNIKAHAN</div><div class="verse-arabic" lang="ar" dir="rtl">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</div><p class="verse-translation" contenteditable="false">“Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.”</p><div class="verse-reference">QS. Ar-Rum [30]: 21</div></div><p class="quote editable" data-key="quote" contenteditable="false">“Two souls, one beautiful story.”</p><div class="ornament">✧ ❀ ✧</div></section>
+<section class="section" id="count" data-target-date="2026-11-23" style="background-image: linear-gradient(rgba(17, 34, 26, 0.76), rgba(17, 34, 26, 0.82)), url(&quot;assets/image-08.jpg&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;"><div class="eyebrow" data-auto-edit-key="auto_7" contenteditable="false">COUNTING DOWN TO OUR DAY</div><h2 class="editable" data-key="counttitle" contenteditable="false">The Beginning of Forever</h2><div class="countdown"><div class="timebox"><strong id="days">009</strong><span>Hari</span></div><div class="timebox"><strong id="hours">03</strong><span>Jam</span></div><div class="timebox"><strong id="minutes">04</strong><span>Menit</span></div><div class="timebox"><strong id="seconds">29</strong><span>Detik</span></div></div><p class="editable" data-key="countnote" contenteditable="false">23 November 2026 · A day to remember</p></section>
+<section class="section" id="couple" style="background-image: linear-gradient(rgba(17, 34, 26, 0.76), rgba(17, 34, 26, 0.82)), url(&quot;assets/image-09.jpg&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;"><div class="ornament">❦ ❧ ❦</div><div class="eyebrow" data-auto-edit-key="auto_10" contenteditable="false">THE BRIDE &amp; THE GROOM</div><h2 class="editable" data-key="coupletitle" contenteditable="false">Meet The Couple</h2><p class="editable" data-key="coupledesc" contenteditable="false">Dua hati, satu cerita, dan perjalanan menuju selamanya.</p><div class="couple-photos"><div class="couple-card"><div class="couple-frame"><span hidden="">Upload foto mempelai pria</span><img id="groomPhoto" src="assets/image-10.jpg" style="touch-action: none; object-position: 49.4139% 45.7048%;"></div><div class="couple-name editable" data-key="couplegroom" contenteditable="false">arjuna wahyu</div><p class="couple-parents editable" data-key="couplegroomparents" contenteditable="false">Putra dari Bapak Tengku &amp; Ibu Kaila</p></div><div class="couple-card"><div class="couple-frame"><span hidden="">Upload foto mempelai wanita</span><img id="bridePhoto" src="assets/image-11.jpg" style="touch-action: none;"></div><div class="couple-name editable" data-key="couplebride" contenteditable="false">nasywa almira</div><p class="couple-parents editable" data-key="couplebrideparents" contenteditable="false">Putri dari Bapak Bintang &amp; Ibu Agatha</p></div></div></section>
+<section class="section" id="gallery" style="background-image: linear-gradient(rgba(17, 34, 26, 0.76), rgba(17, 34, 26, 0.82)), url(&quot;assets/image-08.jpg&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;"><div class="eyebrow" data-auto-edit-key="auto_23" contenteditable="false">A FEW MOMENTS</div><h2 class="editable" data-key="gallerytitle" contenteditable="false">Our Gallery</h2><p class="editable" data-key="gallerydesc" contenteditable="false">Potongan cerita yang membawa kami sampai ke hari ini.</p><div class="eyebrow" style="font-size:11px;letter-spacing:2px;opacity:.8" contenteditable="false">← GESER UNTUK MELIHAT FOTO LAIN →</div><div class="gallery"><div class="photo"><div class="placeholder" hidden="">Upload foto utama melalui editor</div><img src="assets/image-12.jpg" style="touch-action: none;"></div><div class="photo"><div class="placeholder">Our moment</div><img hidden="" style="touch-action: none;"></div><div class="photo"><div class="placeholder">Together</div><img hidden="" style="touch-action: none;"></div><div class="photo"><div class="placeholder">Forever</div><img hidden="" style="touch-action: none;"></div></div></section>
+<section class="section" id="event" style="background-image: linear-gradient(rgba(17, 34, 26, 0.76), rgba(17, 34, 26, 0.82)), url(&quot;assets/image-08.jpg&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;"><div class="ornament">❦</div><div class="eyebrow" data-auto-edit-key="auto_13" contenteditable="false">SAVE THE DATE</div><h2 class="editable" data-key="eventtitle" contenteditable="false">The Wedding Day</h2><div class="details"><div class="detail"><div class="ornament">✧</div><h3 data-auto-edit-key="auto_15" contenteditable="false">DATE</h3><div class="bigdate editable" data-key="eventdate" contenteditable="false">23 November 2026</div><p class="editable" data-key="eventday" contenteditable="false">Senin</p></div><div class="detail"><div class="ornament">✧</div><h3 data-auto-edit-key="auto_18" contenteditable="false">TIME</h3><div class="bigdate editable" data-key="eventtime" contenteditable="false">09.00 WIB</div><p class="editable" data-key="eventnote" contenteditable="false"><br></p></div></div><p class="editable" data-key="venue" style="margin-top:28px" contenteditable="false"></p><div style="text-align: start;"><span style="background-color: initial;">SMAN 3 Tangerang Selatan · Jl. Benda Timur 11A E No 31, Benda Baru</span></div><p contenteditable="false"></p><button class="open-btn" onclick="openMap()" data-map-url="https://maps.app.goo.gl/Mkk3gc7rYJ6iuuCAA" data-auto-edit-key="auto_22" contenteditable="false">See Location ↗</button></section>
+<section class="section" id="closing" style="background-image: linear-gradient(rgba(17, 34, 26, 0.76), rgba(17, 34, 26, 0.82)), url(&quot;assets/image-13.jpg&quot;); background-size: cover; background-position: center center; background-repeat: no-repeat;"><div class="ornament">❧ ❀ ❧</div><h2 class="editable" data-key="closingtitle" contenteditable="false">With Love</h2><p class="editable" data-key="closingtext" contenteditable="false">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Anda berkenan hadir untuk memberikan doa restu.</p><div class="names-small"><span class="editable" data-key="signgroom" contenteditable="false">Arjuna</span><br><span class="amp">&amp;</span><br><span class="editable" data-key="signbride" contenteditable="false">Nasywa</span></div><div class="ornament">✧ ❦ ✧</div></section>
+<footer class="footer editable" data-key="footer" contenteditable="false">Thank you for being part of our story · 2026</footer></div></main>
+<audio id="music" loop="" src="assets/background-music.m4a"></audio><button class="music-control" onclick="toggleMusic()" title="Putar / jeda musik" data-auto-edit-key="auto_29" contenteditable="false">♫</button>
+
+
+
+<style>
+#publishEditor{display:none;position:fixed;z-index:9999;right:14px;top:68px;width:min(390px,calc(100vw - 28px));max-height:calc(100vh - 84px);overflow:auto;background:#eee6d5;color:#26382f;border:1px solid #b49a68;box-shadow:0 12px 50px #000a;padding:16px;font-family:'Cormorant Garamond',serif}
+#publishEditor.show{display:block}#publishEditor h2,#publishEditor h3{font-family:'Cinzel',serif}#publishEditor h2{font-size:20px;margin:0 0 8px}#publishEditor h3{font-size:14px;margin:16px 0 6px;border-bottom:1px solid #b9a982;padding-bottom:5px}#publishEditor label{display:block;font-size:14px;margin:8px 0 3px}#publishEditor input[type=text],#publishEditor input[type=file]{width:100%;padding:8px;border:1px solid #b5a889;background:#fffdf7;color:#26382f}#publishEditor button{border:1px solid #9d8b68;background:#30483d;color:#f3ead7;padding:8px 11px;cursor:pointer;border-radius:3px;margin:4px 3px 4px 0}#publishEditor .danger{background:#70283d}#publishEditor .hint{font-size:12px;line-height:1.45;color:#5d665d}#publishEditor .close{float:right;background:#70283d}
+body.owner-editing .editable,body.owner-editing #site h1,body.owner-editing #site h2,body.owner-editing #site h3,body.owner-editing #site p,body.owner-editing #site .eyebrow,body.owner-editing #site .kicker,body.owner-editing #site .cover-date,body.owner-editing #site .footer{cursor:text;outline:1px dashed #d7b56c}
+#coverPhoto[hidden]{display:none}
+
+/* PHONE CANVAS ON EVERY DEVICE: laptop/desktop previews use the same 390px layout */
+@media (min-width: 801px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    background: #111b16;
+  }
+  .topbar, .layout {
+    width: 390px !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+  }
+  .topbar {
+    min-height: 52px;
+    padding: 6px 9px;
+    gap: 5px;
+  }
+  .brand {
+    font-size: 18px;
+    white-space: nowrap;
+  }
+  .top-actions {
+    gap: 5px;
+    min-width: 0;
+    overflow-x: auto;
+  }
+  .top-actions a {
+    font-size: 12px;
+    padding: 5px 7px;
+  }
+  .layout {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+  }
+  .cover {
+    position: relative !important;
+    top: auto !important;
+    width: 100% !important;
+    height: 740px !important;
+    min-height: 560px !important;
+    padding: 20px !important;
+    box-sizing: border-box;
+  }
+  .fan {
+    width: 312px !important;
+    height: 312px !important;
+    max-width: 80% !important;
+  }
+  .cover-frame {
+    width: 86% !important;
+    min-height: 72%;
+    padding: 60px 20px !important;
+    box-sizing: border-box;
+  }
+  .section {
+    padding: 60px 25px !important;
+  }
+  .content > .section {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+  }
+  .editor {
+    top: 62px;
+  }
+  .topbar small {
+    display: none;
+  }
+  .details {
+    grid-template-columns: 1fr !important;
+  }
+  .countdown {
+    gap: 6px;
+  }
+  .timebox {
+    min-width: 58px;
+    padding: 10px 7px;
+  }
+  .timebox strong {
+    font-size: 22px;
+  }
+  .photo {
+    min-height: 130px;
+  }
+  .photo:first-child {
+    min-height: 210px;
+  }
+  .gallery .photo, .gallery .photo:first-child {
+    flex-basis: 84%;
+    height: 245px;
+  }
+  .couple-photos {
+    gap: 10px;
+  }
+  .couple-frame {
+    height: 220px;
+  }
+  .couple-card {
+    padding: 6px;
+  }
+  .couple-name {
+    font-size: 15px;
+  }
+  .couple-parents {
+    font-size: 13px !important;
+  }
+  .marriage-verse {
+    padding: 24px 20px;
+  }
+  .ornament {
+    font-size: 27px;
+  }
+}
+
+</style>
+<aside id="publishEditor" aria-label="Editor khusus pemilik" class="show">
+  <button class="close" type="button" onclick="closeOwnerEditor()">Tutup ✕</button>
+  <h2>Private Wedding Editor</h2>
+  <p class="hint">Perubahan akan masuk ke file HTML saat kamu menekan tombol Export Website. Upload foto dan musik di sini agar ikut tampil untuk semua tamu setelah file hasil export dipublish ulang.</p>
+  <h3>Tanggal acara &amp; countdown otomatis</h3>
+  <label for="weddingDateInputV11">Pilih tanggal pernikahan</label><input id="weddingDateInputV11" type="date" value="2026-11-16">
+  <button type="button" onclick="applyWeddingDateV11()">Simpan Tanggal &amp; Perbarui Countdown</button>
+  <p class="hint">Countdown, tanggal acara, hari, dan tanggal di cover akan mengikuti tanggal yang kamu pilih.</p>
+  <h3>Lokasi Google Maps</h3>
+  <label for="mapInputV7">Link Google Maps</label><input id="mapInputV7" type="text" placeholder="Tempel link Google Maps di sini">
+  <button type="button" onclick="applyMapV7()">Simpan Link Maps</button>
+  <h3>Foto utama / cover</h3>
+  <label for="coverInputV7">Upload foto cover</label><input id="coverInputV7" type="file" accept="image/*">
+  <h3>Foto mempelai</h3>
+  <p class="hint">Nama mempelai dan keterangan “Putra/Putri dari ...” dapat diubah melalui Edit Tulisan setelah editor dibuka.</p>
+  <label for="groomInputV7">Foto mempelai pria</label><input id="groomInputV7" type="file" accept="image/*">
+  <label for="brideInputV7">Foto mempelai wanita</label><input id="brideInputV7" type="file" accept="image/*">
+  <h3>Foto galeri</h3>
+  <p class="hint">Galeri sekarang bisa digeser ke samping dengan swipe atau scroll horizontal.</p>
+  <label for="galleryInputV7">Pilih sampai 4 foto galeri</label><input id="galleryInputV7" type="file" accept="image/*" multiple="">
+  <h3>Background setiap section</h3>
+  <label for="sectionBgTargetV10">Pilih section yang ingin diberi background</label>
+  <select id="sectionBgTargetV10" style="width:100%;padding:8px;border:1px solid #b5a889;background:#fffdf7;color:#26382f">
+    <option value="invitation">Pembuka</option><option value="count">Countdown</option><option value="couple">Mempelai</option><option value="gallery">Galeri</option><option value="event">Tanggal &amp; lokasi</option><option value="closing">Penutup</option>
+  </select>
+  <label for="sectionBgInputV10">Upload gambar background dari galeri perangkat</label><input id="sectionBgInputV10" type="file" accept="image/*">
+  <button type="button" onclick="applySectionBackgroundV10()">Terapkan Background</button>
+  <button type="button" class="danger" onclick="clearSectionBackgroundV10()">Hapus Background Section</button>
+  <p class="hint">Pilih section, upload foto, lalu terapkan. Foto akan menjadi latar section dengan lapisan gelap tipis agar tulisan tetap terbaca. Ulangi untuk section lain.</p>
+  <h3>Musik undangan</h3>
+  <label for="musicInputV7">Upload musik (MP3 / audio)</label><input id="musicInputV7" type="file" accept="audio/*">
+  <button type="button" onclick="toggleMusicV7()">Putar / Jeda Musik</button>
+  <button type="button" class="danger" onclick="removeMusicV7()">Hapus Musik</button>
+  <h3>Edit tulisan</h3>
+  <button type="button" onclick="toggleTextEditingV7()">Aktifkan / Matikan Edit Tulisan</button>
+  <p class="hint">Setelah edit tulisan, klik area kosong agar perubahan diterapkan. Lalu export file.</p>
+  <h3>Elemen dekorasi dari galeri</h3>
+  <label for="decorInputV7">Upload elemen (PNG transparan / JPG / WebP)</label><input id="decorInputV7" type="file" accept="image/*" multiple="">
+  <button type="button" onclick="toggleDecorModeV8()">Aktifkan Atur Elemen</button>
+  <p class="hint">Setelah diaktifkan, sentuh elemen untuk memilih, geser untuk memindahkan, dan tarik titik emas di sudut untuk memperbesar atau memperkecil. Bisa tambah beberapa elemen.</p>
+  <button type="button" onclick="deleteSelectedDecorV8()" class="danger">Hapus Elemen Terpilih</button>
+  <h3>Publish</h3>
+  <button type="button" onclick="exportPublishV7()">Simpan &amp; Export Website</button>
+  <p class="hint">File hasil export sudah membawa foto, musik, dan link Maps di dalam HTML. Upload file hasil export itu ke Netlify untuk memperbarui website online.</p>
+</aside>
+
+<div id="decorControls" class=""><button type="button" onclick="resizeSelectedDecorV8(-5)">Ukuran −</button><button type="button" onclick="resizeSelectedDecorV8(5)">Ukuran +</button><button type="button" onclick="rotateSelectedDecorV9(-15)">↶ 15°</button><button type="button" onclick="rotateSelectedDecorV9(15)">↷ 15°</button><button type="button" onclick="deleteSelectedDecorV8()" class="danger">Hapus</button><button type="button" onclick="selectDecorV8(null)">Tutup</button></div>
+<script>
+
+(()=>{
+ const $=s=>document.querySelector(s);
+ const password='vintage1611'; // Ganti password ini sebelum publish.
+ let editingText=false;
+ const mapButton=$('#event .open-btn');
+ const cover=$('#coverPhoto');
+ // Clean stale browser-only blob references from this supplied HTML.
+ document.querySelectorAll('.gallery .photo img').forEach(img=>{
+   const src=img.getAttribute('src')||'';
+   if(src.startsWith('blob:')||!src){img.removeAttribute('src');img.hidden=true;const ph=img.parentElement.querySelector('.placeholder');if(ph)ph.hidden=false;}
+ });
+ window.openInvitation=()=>{const c=$('#cover');if(c.classList.contains('doors-opening'))return;c.classList.add('doors-opening');const audio=$('#music');if(audio&&audio.src){audio.play().catch(()=>{/* Browser may require another tap; music button remains available. */});}setTimeout(()=>$('#invitation').scrollIntoView({behavior:'smooth',block:'start'}),1250);};
+ function currentWeddingDateV11(){return $('#count').dataset.targetDate||'2026-11-16';}
+ function formatWeddingDateV11(value,opts={day:'numeric',month:'long',year:'numeric'}){const [y,m,d]=value.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('id-ID',opts);}
+ function updateCountdownV7(){const [y,m,d]=currentWeddingDateV11().split('-').map(Number);const target=new Date(y,m-1,d,0,0,0);let diff=target-new Date();if(diff<=0){$('#days').textContent='000';$('#hours').textContent='00';$('#minutes').textContent='00';$('#seconds').textContent='00';const note=$('[data-key="countnote"]');if(note)note.textContent='Hari bahagia telah tiba. Terima kasih telah menjadi bagian dari hari kami.';return;}const days=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),mns=Math.floor(diff%3600000/60000),sec=Math.floor(diff%60000/1000);$('#days').textContent=String(days).padStart(3,'0');$('#hours').textContent=String(h).padStart(2,'0');$('#minutes').textContent=String(mns).padStart(2,'0');$('#seconds').textContent=String(sec).padStart(2,'0');const note=$('[data-key="countnote"]');if(note)note.textContent=formatWeddingDateV11(currentWeddingDateV11())+' · A day to remember';}
+ function syncWeddingDateV11(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return;$('#count').dataset.targetDate=value;const dateText=formatWeddingDateV11(value);const eventDate=$('[data-key="eventdate"]');if(eventDate)eventDate.textContent=dateText;const eventDay=$('[data-key="eventday"]');if(eventDay)eventDay.textContent=formatWeddingDateV11(value,{weekday:'long'});const coverDate=$('[data-key="coverdate"]');if(coverDate)coverDate.textContent=formatWeddingDateV11(value,{day:'numeric',month:'long',year:'numeric'}).toUpperCase();$('#weddingDateInputV11').value=value;updateCountdownV7();}
+ window.applyWeddingDateV11=()=>{const value=$('#weddingDateInputV11').value;if(!value){alert('Pilih tanggal pernikahan terlebih dahulu.');return;}syncWeddingDateV11(value);alert('Tanggal acara dan countdown berhasil diperbarui. Tekan Simpan & Export Website agar perubahan ikut terpublikasi.');};
+ syncWeddingDateV11(currentWeddingDateV11());
+ updateCountdownV7();setInterval(updateCountdownV7,1000);
+ window.toggleMusic=()=>{const a=$('#music');if(!a.src){alert('Musik belum diunggah oleh pemilik undangan.');return;}if(a.paused)a.play().catch(()=>{});else a.pause();};
+ // Hentikan musik saat halaman disembunyikan, ditinggalkan, atau browser/tab ditutup.
+ const invitationAudio=$('#music');
+ if(invitationAudio){
+   // Ingat apakah musik sedang berjalan sebelum tab disembunyikan.
+   let resumeInvitationAudio = false;
+   document.addEventListener('visibilitychange',()=>{
+     if(document.hidden){
+       resumeInvitationAudio = !invitationAudio.paused && !invitationAudio.ended;
+       if(resumeInvitationAudio) invitationAudio.pause();
+     } else if(resumeInvitationAudio){
+       resumeInvitationAudio = false;
+       invitationAudio.play().catch(()=>{
+         // Jika autoplay dibatasi browser, pengguna tetap bisa memakai tombol musik.
+         resumeInvitationAudio = true;
+       });
+     }
+   });
+   window.addEventListener('pagehide',()=>{
+     resumeInvitationAudio = !invitationAudio.paused && !invitationAudio.ended;
+     if(resumeInvitationAudio) invitationAudio.pause();
+   });
+   window.addEventListener('pageshow',()=>{
+     if(resumeInvitationAudio && !document.hidden){
+       resumeInvitationAudio = false;
+       invitationAudio.play().catch(()=>{ resumeInvitationAudio = true; });
+     }
+   });
+   window.addEventListener('beforeunload',()=>invitationAudio.pause());
+ }
+ function readFile(file,cb){if(!file)return;const r=new FileReader();r.onload=()=>cb(r.result);r.onerror=()=>alert('File tidak bisa dibaca. Coba pilih file lain.');r.readAsDataURL(file);}
+ function setImage(img,data){img.src=data;img.hidden=false;const ph=img.parentElement.querySelector('.placeholder');if(ph)ph.hidden=true;const span=img.parentElement.querySelector('span');if(span)span.hidden=true;}
+ // Saat editor dibuka, foto di dalam bingkai bisa digeser untuk mengatur crop tanpa keluar bingkai.
+ document.querySelectorAll('.couple-frame img,.gallery .photo img').forEach(img=>{let drag=null;img.style.touchAction='none';img.addEventListener('pointerdown',e=>{if(!$('#publishEditor')?.classList.contains('show')||img.hidden)return;const frame=img.parentElement;const pos=(img.style.objectPosition||'50% 50%').split(' ');drag={x:e.clientX,y:e.clientY,px:parseFloat(pos[0])||50,py:parseFloat(pos[1])||50,w:Math.max(1,frame.clientWidth),h:Math.max(1,frame.clientHeight)};img.setPointerCapture(e.pointerId);e.preventDefault();});img.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;const px=Math.max(0,Math.min(100,drag.px-dx/drag.w*100));const py=Math.max(0,Math.min(100,drag.py-dy/drag.h*100));img.style.objectPosition=px+'% '+py+'%';});const stop=()=>drag=null;img.addEventListener('pointerup',stop);img.addEventListener('pointercancel',stop);});
+ function persist(key,value){try{localStorage.setItem('wed_'+key,value)}catch(e){/* Export still embeds the active image directly from the page DOM. */}}
+ window.requestOwnerEditorV7=()=>{
+   const panel=$('#publishEditor');if(!panel)return;
+   const entered=prompt('Masukkan password pemilik untuk membuka editor:');
+   if(entered===password){panel.classList.add('show');$('#mapInputV7').value=mapButton?.dataset.mapUrl||'';$('#weddingDateInputV11').value=currentWeddingDateV11();}
+   else if(entered!==null)alert('Password salah.');
+ };
+ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='e'){e.preventDefault();window.requestOwnerEditorV7();}});
+ window.closeOwnerEditor=()=>$('#publishEditor').classList.remove('show');
+ window.openMap=()=>{const url=mapButton?.dataset.mapUrl||'';if(url){window.open(url,'_blank','noopener')}else alert('Link Google Maps belum ditambahkan oleh pemilik.');};
+ window.applyMapV7=()=>{const raw=$('#mapInputV7').value.trim();if(!raw){alert('Masukkan link Google Maps terlebih dahulu.');return;}try{const u=new URL(raw);if(!['https:','http:'].includes(u.protocol))throw new Error();mapButton.dataset.mapUrl=u.href;persist('map_url',u.href);alert('Link Google Maps tersimpan. Jangan lupa Export Website agar ikut terpublikasi.');}catch(e){alert('Link tidak valid. Tempel URL Google Maps yang lengkap.');}};
+ $('#coverInputV7').addEventListener('change',e=>readFile(e.target.files[0],data=>{setImage(cover,data);persist('cover',data);}));
+ $('#groomInputV7').addEventListener('change',e=>readFile(e.target.files[0],data=>{const img=$('#groomPhoto');if(img)setImage(img,data);persist('groom_portrait',data);}));
+ $('#brideInputV7').addEventListener('change',e=>readFile(e.target.files[0],data=>{const img=$('#bridePhoto');if(img)setImage(img,data);persist('bride_portrait',data);}));
+ $('#galleryInputV7').addEventListener('change',e=>{const files=[...e.target.files].slice(0,4);const slots=[...document.querySelectorAll('.gallery .photo')];files.forEach((f,i)=>readFile(f,data=>{const img=slots[i]?.querySelector('img');if(img){setImage(img,data);persist('photo_'+i,data);}}));});
+ $('#musicInputV7').addEventListener('change',e=>readFile(e.target.files[0],data=>{const a=$('#music');a.src=data;a.load();persist('music',data);alert('Musik dimuat. Musik akan ikut ke file setelah Export Website.');}));
+ window.toggleMusicV7=()=>{const a=$('#music');if(!a.src){alert('Upload musik terlebih dahulu.');return;}if(a.paused)a.play().catch(()=>alert('Browser meminta interaksi untuk memutar audio.'));else a.pause();};
+ window.removeMusicV7=()=>{const a=$('#music');a.pause();a.removeAttribute('src');a.load();try{localStorage.removeItem('wed_music')}catch(e){}};
+ window.toggleTextEditingV7=()=>{editingText=!editingText;document.body.classList.toggle('owner-editing',editingText);document.querySelectorAll('#site h1,#site h2,#site h3,#site p,#site .eyebrow,#site .kicker,#site .cover-date,#site .footer,.editable').forEach(el=>{if(!el.closest('#publishEditor'))el.contentEditable=editingText?'true':'false';});};
+ document.addEventListener('focusout',e=>{if(editingText&&e.target.isContentEditable){e.target.contentEditable='true';}});
+ // Restore browser-local edits when available; Export Website then bakes them into this HTML file.
+ try{
+   const savedMap=localStorage.getItem('wed_map_url');if(savedMap&&!mapButton.dataset.mapUrl)mapButton.dataset.mapUrl=savedMap;
+   const savedCover=localStorage.getItem('wed_cover');if(savedCover)setImage(cover,savedCover);
+   const savedGroom=localStorage.getItem('wed_groom_portrait');if(savedGroom&&$('#groomPhoto'))setImage($('#groomPhoto'),savedGroom);
+   const savedBride=localStorage.getItem('wed_bride_portrait');if(savedBride&&$('#bridePhoto'))setImage($('#bridePhoto'),savedBride);
+   for(let i=0;i<4;i++){const saved=localStorage.getItem('wed_photo_'+i);const img=document.querySelectorAll('.gallery .photo img')[i];if(saved&&img)setImage(img,saved);}
+   const savedMusic=localStorage.getItem('wed_music');if(savedMusic)$('#music').src=savedMusic;
+   if(mapButton?.dataset.mapUrl)$('#mapInputV7').value=mapButton.dataset.mapUrl;
+ }catch(e){}
+ function embedCurrentMedia(clone){
+   const originals=[...document.querySelectorAll('img')],copies=[...clone.querySelectorAll('img')];
+   originals.forEach((img,i)=>{const cp=copies[i];if(!cp)return;const src=img.currentSrc||img.src||'';if(src.startsWith('data:')){cp.setAttribute('src',src);cp.hidden=img.hidden;}else if(src.startsWith('blob:')||!src){cp.removeAttribute('src');cp.hidden=true;}});
+   const audio=$('#music'),audioCopy=clone.querySelector('#music');if(audioCopy){const src=audio.getAttribute('src')||'';if(src.startsWith('data:'))audioCopy.setAttribute('src',src);else audioCopy.removeAttribute('src');}
+   const originalMap=mapButton?.dataset.mapUrl||'';const mapCopy=clone.querySelector('#event .open-btn');if(mapCopy){mapCopy.dataset.mapUrl=originalMap;mapCopy.setAttribute('onclick','openMap()');}
+ }
+ // Per-section background upload. Inline styles are retained in exported HTML.
+ const sectionBgInput=$('#sectionBgInputV10');
+ window.applySectionBackgroundV10=()=>{const id=$('#sectionBgTargetV10').value;const file=sectionBgInput.files?.[0];if(!file){alert('Pilih gambar background terlebih dahulu.');return;}readFile(file,data=>{const section=document.getElementById(id);if(!section)return;section.style.backgroundImage=`linear-gradient(rgba(17,34,26,.76),rgba(17,34,26,.82)),url("${data}")`;section.style.backgroundSize='cover';section.style.backgroundPosition='center';section.style.backgroundRepeat='no-repeat';alert('Background section berhasil diterapkan. Klik Export Website agar tersimpan ke file.');});};
+ window.clearSectionBackgroundV10=()=>{const section=document.getElementById($('#sectionBgTargetV10').value);if(section){section.style.removeProperty('background-image');section.style.removeProperty('background-size');section.style.removeProperty('background-position');section.style.removeProperty('background-repeat');}};
+ window.exportPublishV7=()=>{
+   document.activeElement?.blur();
+   const clone=document.documentElement.cloneNode(true);
+   embedCurrentMedia(clone);
+   // Keep the password-protected editor in exported copies so the owner can edit again from phone.
+   clone.querySelectorAll('.selected-tools,.reopen-editor,#editor').forEach(el=>el.remove());
+   clone.querySelector('body')?.classList.remove('owner-editing','editing');
+   clone.querySelectorAll('[contenteditable]').forEach(el=>el.setAttribute('contenteditable','false'));
+   clone.querySelectorAll('.decor.selected').forEach(el=>el.classList.remove('selected'));
+   const scripts=[...clone.querySelectorAll('script')];
+   // Keep owner editor and keyboard shortcut available in the exported copy.
+   const html='<!DOCTYPE html>\n'+clone.outerHTML;
+   const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='index.html';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+   alert('File index.html siap dipublish. Upload file hasil export ini ke Netlify untuk mengganti versi online.');
+ };
+})();
+
+</script>
+
+<script>
+/* V12: free placement, proportional resize, and rotation for uploaded decorative images. */
+(()=>{
+ const layer=document.getElementById('decorLayer'), panel=document.getElementById('publishEditor'), input=document.getElementById('decorInputV7'), controls=document.getElementById('decorControls'), content=document.getElementById('content');
+ if(!layer||!input||!content)return;
+ let selected=null,active=false,gesture=null;
+ const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+ function dims(){return {w:Math.max(1,content.clientWidth),h:Math.max(1,content.scrollHeight)}}
+ function setSelected(el){selected=el;layer.querySelectorAll('.decor').forEach(x=>x.classList.toggle('selected',x===el));controls.classList.toggle('show',!!el&&active);}
+ window.selectDecorV8=setSelected;
+ function createDecor(data){
+   const el=document.createElement('div');el.className='decor';el.style.left='42%';el.style.top='12%';el.style.width='18%';el.style.transform='rotate(0deg)';el.dataset.decor='1';
+   const img=document.createElement('img');img.src=data;img.alt='Elemen dekorasi tambahan';
+   const handle=document.createElement('span');handle.className='resize';handle.setAttribute('aria-label','Ubah ukuran');
+   const rotate=document.createElement('span');rotate.className='rotate-handle';rotate.setAttribute('aria-label','Putar elemen');
+   el.append(img,handle,rotate);layer.appendChild(el);setSelected(el);
+ }
+ input.addEventListener('change',()=>{[...input.files].forEach(file=>{if(!file.type.startsWith('image/'))return;const reader=new FileReader();reader.onload=()=>createDecor(reader.result);reader.readAsDataURL(file)});input.value='';});
+ window.toggleDecorModeV8=()=>{active=!active;layer.classList.toggle('decor-active',active);controls.classList.toggle('show',active&&!!selected);if(!active)setSelected(null);const b=panel?.querySelector('button[onclick="toggleDecorModeV8()"]');if(b)b.textContent=active?'Selesai Atur Elemen':'Aktifkan Atur Elemen';};
+ window.deleteSelectedDecorV8=()=>{if(selected){selected.remove();selected=null;controls.classList.remove('show')}};
+ window.resizeSelectedDecorV8=(delta)=>{if(!selected)return;const w=parseFloat(selected.style.width)||18;selected.style.width=clamp(w+delta,2,100)+'%';};
+ function angle(el){const m=(el.style.transform||'').match(/rotate\(([-\d.]+)deg\)/);return m?parseFloat(m[1]):0;}
+ window.rotateSelectedDecorV9=(delta)=>{if(selected)selected.style.transform=`rotate(${angle(selected)+delta}deg)`;};
+ layer.addEventListener('pointerdown',e=>{
+   if(!active)return;const el=e.target.closest('.decor');if(!el)return;e.preventDefault();setSelected(el);
+   const box=dims(),left=parseFloat(el.style.left)||0,top=parseFloat(el.style.top)||0,width=parseFloat(el.style.width)||18;
+   const rect=el.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+   gesture={el,startX:e.clientX,startY:e.clientY,left,top,width,angle:angle(el),cx,cy,startAngle:Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI,resize:e.target.classList.contains('resize'),rotate:e.target.classList.contains('rotate-handle')};
+   try{el.setPointerCapture(e.pointerId)}catch(_){}
+ });
+ layer.addEventListener('pointermove',e=>{
+   if(!gesture)return;const g=gesture,box=dims(),dx=e.clientX-g.startX,dy=e.clientY-g.startY;
+   if(g.rotate){const now=Math.atan2(e.clientY-g.cy,e.clientX-g.cx)*180/Math.PI;g.el.style.transform=`rotate(${g.angle+now-g.startAngle}deg)`;}
+   else if(g.resize){g.el.style.width=clamp(g.width+dx/box.w*100,2,100)+'%';}
+   else{const widthPct=clamp(g.width,2,100);g.el.style.left=clamp(g.left+dx/box.w*100,0,100-widthPct)+'%';g.el.style.top=clamp(g.top+dy/box.h*100,0,99)+'%';}
+ });
+ const end=()=>gesture=null;layer.addEventListener('pointerup',end);layer.addEventListener('pointercancel',end);
+ layer.addEventListener('click',e=>{if(active){const el=e.target.closest('.decor');if(el)setSelected(el)}});
+ window.addEventListener('resize',()=>{if(selected&&active)controls.classList.add('show')});
+})();
+</script>
+
+</body></html>
